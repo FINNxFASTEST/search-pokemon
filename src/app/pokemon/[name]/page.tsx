@@ -68,11 +68,11 @@ export async function getPokemon(pokemonData: any) {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody),
-        cache: {
-            next : {
-                revalidate : 10,
-            }
-        }
+        // cache: {
+        //     next : {
+        //         revalidate : 10,
+        //     }
+        // }
     };
 
     const res = await fetch('https://graphql-pokemon2.vercel.app', options)
