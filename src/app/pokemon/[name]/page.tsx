@@ -1,65 +1,19 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
 
-type Props = {
-    pokeName: string,
-}
-
-type pokeScheme = {
-    "id": "",
-    "number": "",
-    "name": "",
-    "weight": {
-        "minimum": "",
-        "maximum": ""
-    },
-    "height": {
-        "minimum": "",
-        "maximum": ""
-    },
-    "classification": "",
-    "types": [
-        ""
-    ],
-    "resistant": [
-        ""
-    ],
-    "weaknesses": [
-        ""
-    ],
-    "fleeRate": "",
-    "maxCP": "",
-    "maxHP": "",
-    "image": "",
-    "attacks": {
-        "fast": [{
-            "name": '',
-            "type": '',
-            "damage": '',
-        }],
-        "special": [{
-            "name": "",
-            "type": "",
-            "damage": "",
-        }]
-    },
-    "evolutionRequirements": {
-        "amount": "",
-        "name": "",
-    },
-    "evolutions": [{
-        "name": null
-    }],
+type Params = {
+    params : {
+        name: string
+    }
+    
 }
 
 type poke = {
     name: String,
 }
 
-export async function getPokemon(pokemonData: poke) {
+export async function getPokemon(pokemonData: any) {
     const headers = {
         "Content-Type": "application/json",
     };
@@ -114,7 +68,11 @@ export async function getPokemon(pokemonData: poke) {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody),
-        cache: 'force-cache'
+        cache: {
+            next : {
+                revalidate : 10,
+            }
+        }
     };
 
     const res = await fetch('https://graphql-pokemon2.vercel.app', options)
@@ -122,10 +80,8 @@ export async function getPokemon(pokemonData: poke) {
     return data.data.pokemon
 }
 
-export default function SearchPokePage(prop: Props) {
-    const param: any = useParams()
-    const pokemonData = getPokemon(param.name)
-    let miniComponent: any = [];
+export default function SearchPokePage({ params : params }: Params) {
+    let pokeName  = params.name
     const router = useRouter();
     const [pokeData, setPokeData] = useState({
         "id": "",
@@ -177,7 +133,7 @@ export default function SearchPokePage(prop: Props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const getPoke = await getPokemon(param.name)
+            const getPoke = await getPokemon(pokeName)
             if ( getPoke){
                 setPokeData(getPoke);
             }
@@ -310,4 +266,5 @@ export default function SearchPokePage(prop: Props) {
             </div>
         </div>
     )
+    //return (<></>)
 }
